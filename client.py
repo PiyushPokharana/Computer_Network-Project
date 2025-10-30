@@ -1,10 +1,17 @@
 import socket
 import pickle
 import torch
-from model_def import SimpleNet
+from torch.utils.data import DataLoader, Subset
+from torchvision import datasets, transforms
+import os
+from model_def import MNISTNet
 
-SERVER_IP = "192.168.2.32"   # Replace with actual server IP
+SERVER_IP = "10.159.215.173"   # Replace with actual server IP
 PORT = 5000
+
+# Get client ID from environment or default to 0
+CLIENT_ID = int(os.environ.get("CLIENT_ID", "0"))
+NUM_CLIENTS = int(os.environ.get("NUM_CLIENTS", "2"))
 
 def receive_data(sock):
     """Receive data with length prefix (matching server protocol)"""
@@ -43,22 +50,61 @@ def send_data(sock, data):
     except Exception as e:
         raise RuntimeError(f"Error sending data: {e}")
 
-def local_train(model):
-    """Simulate local training on dummy data"""
-    print("Starting local training...")
-    x = torch.randn(50, 10)
-    y = torch.randint(0, 2, (50,))
-    loss_fn = torch.nn.CrossEntropyLoss()
-    opt = torch.optim.SGD(model.parameters(), lr=0.01)
+def load_mnist_client_data(client_id, num_clients=2):
+    """Load MNIST data for this specific client"""
+    print(f"Loading MNIST data for client {client_id}/{num_clients-1}...")
+    
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,))
+    ])
+    
+    # Download MNIST if needed
+    dataset = datasets.MNIST('./data', train=True, download=True, transform=transform)
+    
+    # Divide data among clients (simple split - each gets equal portion)
+    total_samples = len(dataset)
+    samples_per_client = total_samples // num_clients
+    start_idx = client_id * samples_per_client
+    end_idx = start_idx + samples_per_client if client_id < num_clients - 1 else total_samples
+    
+    # Create subset for this client
+    indices = list(range(start_idx, end_idx))
+    client_dataset = Subset(dataset, indices)
+    
+    print(f"Client {client_id} has {len(client_dataset)} samples (indices {start_idx}-{end_idx-1})")
+    
+    return DataLoader(client_dataset, batch_size=32, shuffle=True)
 
-    for epoch in range(5):
-        opt.zero_grad()
-        pred = model(x)
-        loss = loss_fn(pred, y)
-        loss.backward()
-        opt.step()
-        if epoch == 0 or epoch == 4:
-            print(f"  Epoch {epoch+1}/5, Loss: {loss.item():.4f}")
+def local_train(model, client_id, epochs=5):
+    """Train model on local MNIST data"""
+    print(f"Starting local training for client {client_id}...")
+    dataloader = load_mnist_client_data(client_id, NUM_CLIENTS)
+    
+    loss_fn = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+    
+    model.train()
+    for epoch in range(epochs):
+        epoch_loss = 0
+        correct = 0
+        total = 0
+        
+        for batch_idx, (data, target) in enumerate(dataloader):
+            optimizer.zero_grad()
+            output = model(data)
+            loss = loss_fn(output, target)
+            loss.backward()
+            optimizer.step()
+            
+            epoch_loss += loss.item()
+            pred = output.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target.view_as(pred)).sum().item()
+            total += target.size(0)
+        
+        accuracy = 100. * correct / total
+        avg_loss = epoch_loss / len(dataloader)
+        print(f"  Epoch {epoch+1}/{epochs}, Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%")
     
     print("Local training complete")
     return model.state_dict()
@@ -66,6 +112,7 @@ def local_train(model):
 def main():
     client = None
     try:
+        print(f"=== Federated Learning Client {CLIENT_ID} ===")
         print(f"Connecting to server at {SERVER_IP}:{PORT}...")
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.settimeout(120)  # 2 minute timeout
@@ -78,12 +125,12 @@ def main():
         global_state = pickle.loads(recv_data)
         print("Global model received and deserialized")
         
-        model = SimpleNet()
+        model = MNISTNet()
         model.load_state_dict(global_state)
         print("Model loaded successfully")
 
         # Perform local training
-        updated_state = local_train(model)
+        updated_state = local_train(model, CLIENT_ID)
 
         # Send updated weights
         print("Sending updated model back to server...")
@@ -97,6 +144,8 @@ def main():
         print("Make sure the server is running and the IP/PORT are correct")
     except Exception as e:
         print(f"ERROR: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         if client:
             client.close()
