@@ -30,12 +30,13 @@ ENV/
 env.bak/
 venv.bak/
 
-# PyTorch
+# PyTorch Models
 *.pth
 *.pt
 checkpoints/
 models/
 *.ckpt
+global_model.pth
 
 # IDE
 .vscode/
@@ -43,7 +44,6 @@ models/
 *.swp
 *.swo
 *~
-.DS_Store
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -56,15 +56,23 @@ models/
 *.log
 logs/
 
-# Data
-data/
+# Dataset (MNIST will be downloaded automatically)
+data/MNIST/
 datasets/
-*.csv
-*.json
+
+# Generated outputs (moved to Extras)
+training_history.json
+performance_metrics.json
+param_snapshot_*.json
+*.png
+*.gif
 
 # OS
 Thumbs.db
 .DS_Store
 
-# Project specific
+# Project specific - Extras folder with generated files
 Extras/
+
+# PDF reports (generate from markdown)
+*.pdf

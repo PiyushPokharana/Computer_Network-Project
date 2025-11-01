@@ -208,15 +208,86 @@ Then you can use network emulation (`tc`, `netem`, or your Python simulator) to 
 
 ---
 
-## Project Structure
+## 🎨 Key Features
+
+### ✨ Core Implementation
+- **Federated Averaging (FedAvg)** - Standard FL aggregation algorithm
+- **Non-IID Data Distribution** - Realistic client data heterogeneity
+- **6G Network Simulation** - Configurable latency, bandwidth, jitter, packet loss
+- **TCP Socket Communication** - Secure model weight transmission
+- **MNIST Dataset** - Handwritten digit classification (28x28 images)
+
+### 📊 Advanced Visualizations (15+ Charts)
+- **Training Curves** - Accuracy and loss over rounds
+- **Parameter Evolution** - Weight/bias changes across layers
+- **Network Analysis** - Throughput, latency, packet loss metrics
+- **Live Network Animation** - Real-time packet transmission visualization
+- **Performance Dashboards** - Comprehensive metrics overview
+
+### 🔧 Monitoring & Analysis Tools
+- Real-time training monitor
+- Automated testing suite
+- Performance metrics collection
+- Network parameter analysis
+- Parameter snapshots per round
+
+### 📈 Project Results
+- **Accuracy**: 97.96% on MNIST test set
+- **Total Traffic**: 8.38 MB across all rounds
+- **Training Time**: 9.61 minutes (5 rounds)
+- **Model Size**: 109,386 parameters
+
+---
+
+## 📁 Project Structure
 
 ```
-federated_learning/
-├── client.py          # FL client implementation
-├── server.py          # FL server/aggregator
-├── model_def.py       # Neural network model definition
-├── Readme.md          # This file
-└── venv/              # Python virtual environment
+federated_learning_2/
+├── 🐍 Core Python Files
+│   ├── server.py                    # FL server with metrics collection
+│   ├── client.py                    # FL client with 6G simulation
+│   ├── model_def.py                 # Neural network (MNISTNet)
+│   └── data_utils.py                # Data loading & partitioning
+│
+├── 📊 Visualization Scripts
+│   ├── visualize_training.py        # Training curves & metrics
+│   ├── visualize_metrics.py         # Performance analysis
+│   ├── visualize_all.py             # Comprehensive dashboard
+│   ├── visualize_network_parameters.py  # 15+ network visualizations
+│   ├── visualize_live_network.py    # Basic live animation
+│   └── visualize_live_network_advanced.py  # Enhanced live animation
+│
+├── 🔧 Tools
+│   ├── monitor.py                   # Real-time training monitor
+│   └── test_implementation.py       # Automated testing
+│
+├── 📚 Documentation
+│   ├── PROJECT_REPORT.md            # Comprehensive 30+ page report
+│   ├── PRESENTATION_GUIDE.md        # 15-page presentation guide
+│   ├── HOW_TO_RUN.md               # Step-by-step execution guide
+│   ├── IMPLEMENTATION_GUIDE.md      # Technical implementation details
+│   ├── ALL_VISUALIZATIONS.md        # Complete visualization reference
+│   ├── LIVE_VISUALIZATION_GUIDE.md  # Animation usage guide
+│   ├── NETWORK_PARAMETERS_EXPLAINED.md  # Parameter analysis
+│   ├── QUICKSTART.md               # Get started in 5 minutes
+│   ├── CHANGELOG.md                # Version history
+│   ├── CONTRIBUTING.md             # Contribution guidelines
+│   └── GITHUB_SETUP.md             # GitHub configuration guide
+│
+├── 🗂️ Configuration
+│   ├── requirements.txt             # Python dependencies
+│   ├── setup.py                    # Package installation
+│   └── .gitignore                  # Git exclusions
+│
+├── 📦 Data & Models
+│   ├── data/MNIST/                 # MNIST dataset (auto-downloaded)
+│   └── venv/                       # Python virtual environment
+│
+└── 🗃️ Extras/
+    ├── generated_outputs/          # Training outputs (JSON, PTH)
+    ├── visualizations/             # Generated PNG charts
+    ├── parameter_snapshots/        # Per-round parameter saves
+    └── extra_docs/                 # Additional documentation
 ```
 
 ---
@@ -267,19 +338,189 @@ Or run directly with venv:
 
 ---
 
-## Features
+## 🚀 Getting Started
 
-### Client Features:
-- ✅ Local model training with dummy data
-- ✅ Secure model weight transmission (length-prefixed protocol)
-- ✅ Error handling for network issues
-- ✅ Configurable via environment variables
-- ✅ Timeout protection (30 seconds)
+### Prerequisites
+- Python 3.9 or higher
+- PyTorch 2.0+
+- Matplotlib, Seaborn, Pandas
+- 2+ GB RAM (for MNIST dataset)
+- Network connectivity (for multi-device setup)
 
-### Server Features:
-- 🔄 Global model aggregation (FedAvg)
-- 📊 Multi-client support
-- 🔄 Multiple training rounds
+### Quick Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/The-Harsh-Vardhan/federated_learning.git
+cd federated_learning_2
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows PowerShell:
+.\venv\Scripts\Activate.ps1
+# Linux/Mac:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Running the System
+
+**Step 1: Start the server**
+```bash
+python server.py
+```
+
+**Step 2: Start clients (in separate terminals)**
+```bash
+# Client 1
+python client.py
+
+# Client 2 (on same or different machine)
+export SERVER_IP=192.168.1.10  # Set to server's IP
+python client.py
+```
+
+**Step 3: Monitor training (optional)**
+```bash
+# In another terminal
+python monitor.py
+```
+
+**Step 4: Generate visualizations (after training)**
+```bash
+# All visualizations at once
+python visualize_all.py
+
+# Or specific visualizations
+python visualize_training.py
+python visualize_network_parameters.py
+
+# Live network animation (during training)
+python visualize_live_network_advanced.py
+```
+
+For detailed instructions, see [HOW_TO_RUN.md](HOW_TO_RUN.md).
+
+---
+
+## 📊 Visualization Gallery
+
+This project includes 15+ different visualizations:
+
+| Visualization | Description | Output |
+|---------------|-------------|--------|
+| **Training Curves** | Accuracy and loss over rounds | `training_curves.png` |
+| **Complete Dashboard** | 6-panel overview | `complete_dashboard.png` |
+| **Parameter Evolution** | Weight changes per layer | `parameter_evolution.png` |
+| **Weight Heatmaps** | Visual representation of weights | `weight_heatmaps_round_*.png` |
+| **Network Throughput** | Data transfer rates | `network_throughput.png` |
+| **Latency Analysis** | Communication delays | `latency_distribution.png` |
+| **Packet Loss** | Network reliability | `packet_loss.png` |
+| **Live Animation** | Real-time packet transmission | `network_animation.gif` |
+
+See [ALL_VISUALIZATIONS.md](ALL_VISUALIZATIONS.md) for complete gallery.
+
+---
+
+## 🔬 Technical Details
+
+### Model Architecture (MNISTNet)
+```
+Input Layer:    784 neurons (28x28 flattened)
+Hidden Layer 1: 128 neurons + ReLU
+Hidden Layer 2: 64 neurons + ReLU
+Output Layer:   10 neurons (digits 0-9)
+Total Params:   109,386 parameters
+```
+
+### 6G Network Simulation Parameters
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| Bandwidth | 1000 Mbps | Maximum data rate |
+| Base Latency | 10 ms | Minimum delay |
+| Jitter | 5 ms | Delay variation |
+| Packet Loss | 1% | Random packet drops |
+| Model Size | ~220 KB | Per transmission |
+
+### Federated Learning Configuration
+| Setting | Value | Notes |
+|---------|-------|-------|
+| Algorithm | FedAvg | Standard averaging |
+| Clients | 2 | Configurable |
+| Local Epochs | 1 | Per client per round |
+| Global Rounds | 5 | Server iterations |
+| Batch Size | 64 | For local training |
+| Learning Rate | 0.001 | Adam optimizer |
+| Data Split | Non-IID | 60/40 split |
+
+---
+
+## 🎓 Educational Value
+
+This project demonstrates:
+- **Distributed Machine Learning** - Training without centralized data
+- **Network Simulation** - Modeling 6G characteristics
+- **Socket Programming** - TCP client-server architecture
+- **Data Visualization** - Comprehensive analysis tools
+- **Software Engineering** - Modular design, testing, documentation
+
+Ideal for:
+- Computer Networks course projects
+- Machine Learning assignments
+- Distributed Systems labs
+- Research in Federated Learning
+- 6G network simulation studies
+
+---
+
+## � Documentation
+
+| Document | Description |
+|----------|-------------|
+| [PROJECT_REPORT.md](PROJECT_REPORT.md) | Complete 30+ page technical report |
+| [PRESENTATION_GUIDE.md](PRESENTATION_GUIDE.md) | 15-page presentation-focused summary |
+| [HOW_TO_RUN.md](HOW_TO_RUN.md) | Step-by-step execution instructions |
+| [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) | Technical implementation details |
+| [ALL_VISUALIZATIONS.md](ALL_VISUALIZATIONS.md) | Complete visualization gallery |
+| [NETWORK_PARAMETERS_EXPLAINED.md](NETWORK_PARAMETERS_EXPLAINED.md) | Network analysis guide |
+| [QUICKSTART.md](QUICKSTART.md) | Get started in 5 minutes |
+
+---
+
+## � Troubleshooting
+
+### Common Issues
+
+**"Address already in use" error**
+```bash
+# Windows: Find and kill process using port 5000
+netstat -ano | findstr :5000
+taskkill /PID <PID> /F
+```
+
+**Module not found errors**
+```bash
+# Ensure you're in virtual environment
+pip install -r requirements.txt
+```
+
+**Connection refused**
+```bash
+# Check server is running and firewall allows port 5000
+# Update SERVER_IP environment variable
+```
+
+**MNIST download fails**
+```bash
+# Manually download to data/MNIST/raw/
+# Or use VPN if blocked
+```
+
+See [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) for more troubleshooting.
 
 ---
 
@@ -294,20 +535,107 @@ Or run directly with venv:
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-This project is part of a Computer Networks course project at IIIT Nagpur demonstrating Federated Learning concepts in simulated 6G network environments.
+Contributions are welcome! This project is part of ongoing research and educational efforts in Federated Learning and 6G networks.
+
+### How to Contribute
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+### Areas for Contribution
+- Additional network simulation models
+- New visualization techniques
+- Performance optimizations
+- Enhanced client selection strategies
+- Advanced aggregation algorithms
+- Better documentation
+- Bug fixes and testing
 
 ---
 
-## License
+## 📝 License
 
-Educational project - IIIT Nagpur
+MIT License - see [LICENSE](LICENSE) file for details.
+
+This is an educational project developed at IIIT Nagpur for demonstrating Federated Learning concepts in simulated 6G network environments.
 
 ---
 
-## References
+## 👨‍💻 Authors
 
-- Federated Learning: Collaborative Machine Learning without Centralized Training Data
-- 6G Networks: The Next Horizon for Wireless Communications
-- FedAvg Algorithm: Communication-Efficient Learning of Deep Networks
+**Harsh Vardhan**
+- GitHub: [@The-Harsh-Vardhan](https://github.com/The-Harsh-Vardhan)
+- Institution: Indian Institute of Information Technology, Nagpur
+- Course: Computer Networks Lab (5th Semester)
+
+---
+
+## 🙏 Acknowledgments
+
+- IIIT Nagpur for providing the platform and resources
+- PyTorch team for the deep learning framework
+- Federated Learning research community
+- Open source contributors
+
+---
+
+## 📚 References
+
+### Federated Learning
+- McMahan, B., et al. (2017). "Communication-Efficient Learning of Deep Networks from Decentralized Data"
+- Kairouz, P., et al. (2021). "Advances and Open Problems in Federated Learning"
+- Li, T., et al. (2020). "Federated Learning: Challenges, Methods, and Future Directions"
+
+### 6G Networks
+- Letaief, K. B., et al. (2021). "The Roadmap to 6G: AI Empowered Wireless Networks"
+- Saad, W., et al. (2020). "A Vision of 6G Wireless Systems: Applications, Trends, Technologies, and Open Research Problems"
+- Nguyen, D. C., et al. (2022). "6G Internet of Things: A Comprehensive Survey"
+
+### Distributed Machine Learning
+- Dean, J., et al. (2012). "Large Scale Distributed Deep Networks"
+- Li, M., et al. (2014). "Scaling Distributed Machine Learning with the Parameter Server"
+
+---
+
+## 📧 Contact & Support
+
+- **Issues**: Please use the [GitHub Issues](https://github.com/The-Harsh-Vardhan/federated_learning/issues) page
+- **Discussions**: For questions and discussions, use [GitHub Discussions](https://github.com/The-Harsh-Vardhan/federated_learning/discussions)
+- **Email**: For private inquiries, contact through GitHub profile
+
+---
+
+## 🌟 Star History
+
+If you find this project helpful, please consider giving it a ⭐ on GitHub!
+
+---
+
+## 📊 Project Status
+
+![Python](https://img.shields.io/badge/Python-3.9+-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/Status-Active-success)
+![Maintenance](https://img.shields.io/badge/Maintained-Yes-brightgreen)
+
+**Last Updated**: December 2024  
+**Version**: 1.0.0  
+**Status**: Active Development
+
+---
+
+<div align="center">
+
+### Made with ❤️ for learning and research
+
+**[⬆ Back to Top](#federated-learning-in-simulated-6g-networks)**
+
+</div>
